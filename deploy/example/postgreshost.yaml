@@ -1,0 +1,11 @@
+apiVersion: postgres.kabisa.nl/v1alpha1
+kind: PostgresHost
+metadata:
+  name: example-host
+spec:
+  # Add fields here
+  address: "postgres"
+  port: 5432
+  user_name: "postgres"
+  secret_name: "postgres"
+  # secret_key: "defaults to password"

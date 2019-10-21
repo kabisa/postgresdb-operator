@@ -1,0 +1,3 @@
+ansible
+openshift # for reading k8s facts
+psycopg2-binary

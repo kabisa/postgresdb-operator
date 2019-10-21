@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresdb-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: postgresdb-operator
+  template:
+    metadata:
+      labels:
+        name: postgresdb-operator
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      serviceAccountName: postgresdb-operator
+      containers:
+        - name: ansible
+          command:
+          - /usr/local/bin/ao-logs
+          - /tmp/ansible-operator/runner
+          - stdout
+          image: kabisa/postgresdb-operator
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: /tmp/ansible-operator/runner
+            name: runner
+            readOnly: true
+        - name: operator
+          image: kabisa/postgresdb-operator
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: /tmp/ansible-operator/runner
+            name: runner
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "postgresdb-operator"
+            - name: ANSIBLE_GATHERING
+              value: explicit
+      volumes:
+        - name: runner
+          emptyDir: {}

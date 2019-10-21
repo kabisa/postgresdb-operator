@@ -1,0 +1,8 @@
+apiVersion: postgres.kabisa.nl/v1alpha1
+kind: Database
+metadata:
+  name: example-database
+spec:
+  # Add fields here
+  host: example-host
+  database_name: example-database
