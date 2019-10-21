@@ -3,16 +3,18 @@
 This is an operator build with Operator Framework Ansible. Its goal is to manage database resources within a Postgres deployment. It expects Postgres to be running already.
 
 What does it manage:
- - Database creation
- - Database deletion
+ - database creation
+ - database deletion
  
 What is required:
- - A secret that contains the Postgres admin password 
- - A PostgresHost definition
+ - a secret that contains the Postgres admin password 
+ - a PostgresHost definition
  
 ## Installation
 
-There are two options. Manually `kubectl create -f` or as a bundle use `kubectl create -k` (requires kubectl version >= 1.15 )
+There are two options:
+ - manually `kubectl create -f`
+ - as a bundle use `kubectl create -k` (requires kubectl version >= 1.15 )
 
 ### Manually
 
@@ -45,7 +47,7 @@ data:
   password: cG9zdGdyZXNxbFBhc3N3b3Jk  # postgresqlPassword (plz do not use this pw in production)
 ```
 
-Our postgres host:
+Our Postgres host:
 ```yaml
 apiVersion: postgres.kabisa.nl/v1alpha1
 kind: PostgresHost
