@@ -12,29 +12,26 @@ spec:
   scope: Namespaced
   subresources:
     status: {}
-  versions:
-  - name: v1alpha1
-    served: true
-    storage: true
-    schema:
-      openAPIV3Schema:
-        required: ["spec"]
-        properties:
-          spec:
-            required: ["address", "user_name", "secret_name"]
-            properties:
-              address:
-                type: string
-                minimum: 1
-              port:
-                type: integer
-                minimum: 1
-              user_name:
-                type: string
-                minimum: 1
-              secret_name:
-                type: string
-                minimum: 1
-              secret_key:
-                type: string
-                minimum: 1
+  version: v1alpha1
+  validation:
+    openAPIV3Schema:
+      required: ["spec"]
+      properties:
+        spec:
+          required: ["address", "user_name", "secret_name"]
+          properties:
+            address:
+              type: string
+              minimum: 1
+            port:
+              type: integer
+              minimum: 1
+            user_name:
+              type: string
+              minimum: 1
+            secret_name:
+              type: string
+              minimum: 1
+            secret_key:
+              type: string
+              minimum: 1
