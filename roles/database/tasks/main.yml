@@ -7,21 +7,13 @@
     namespace: "{{ meta.namespace }}"
     name: "{{ host }}"
   register: host_cr
-- name: "read host {{ host }}"
-  k8s_facts:
-    kind: Secret
-    namespace: "{{ meta.namespace }}"
-    name: "{{ host_cr.resources[0].spec.secret_name }}"
-  register: host_secret
-- name: get password key
-  set_fact:
-    password_key: '{{ host_cr.resources[0].spec.get("secret_key", "password") }}'
-- name: get vars
-  set_fact:
-    password: "{{ host_secret.resources[0].data[password_key] | b64decode }}"
-    address: "{{ host_cr.resources[0].spec.address }}"
-    port: "{{ host_cr.resources[0].spec.port }}"
-    user_name: "{{ host_cr.resources[0].spec.user_name }}"
+- name: get host info
+  include_role:
+    name: postgreshost
+    tasks_from: get_info
+  vars:
+    host: "{{ host }}"
+    namespace: "{{ namespace }}"
 - name: "Create a new database with name {{ database_name }}"
   postgresql_db:
     name: "{{ database_name }}"

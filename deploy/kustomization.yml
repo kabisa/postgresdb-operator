@@ -1,7 +1,10 @@
 resources:
   - crds/postgres.kabisa.nl_databases_crd.yaml
   - crds/postgres.kabisa.nl_postgreshosts_crd.yaml
+  - crds/postgres.kabisa.nl_postgresusers_crd.yaml
+  - crds/postgres.kabisa.nl_postgresusersgrant_crd.yaml
   - role.yaml
   - service_account.yaml
   - role_binding.yaml
   - operator.yaml
+# namespace: postgres

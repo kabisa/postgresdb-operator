@@ -18,7 +18,7 @@ spec:
       required: ["spec"]
       properties:
         spec:
-          required: ["user_name", "secret_name", "priv", "database_name"]
+          required: ["user_name", "secret_name"]
           properties:
             user_name:
               type: string
@@ -26,9 +26,4 @@ spec:
             secret_name:
               type: string
               minimum: 1
-            priv:
-              type: string
-              minimum: 1
-            database_name:
-              type: string
-              minimum: 1
+

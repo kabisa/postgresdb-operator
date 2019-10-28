@@ -1,14 +1,14 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: postgresusers.postgres.kabisa.nl
+  name: postgresusergrants.postgres.kabisa.nl
 spec:
   group: postgres.kabisa.nl
   names:
-    kind: PostgresUser
-    listKind: PostgresUserList
-    plural: postgresusers
-    singular: postgresuser
+    kind: PostgresUserGrant
+    listKind: PostgresUserGrantList
+    plural: postgresusergrants
+    singular: postgresusergrant
   scope: Namespaced
   subresources:
     status: {}
@@ -18,17 +18,14 @@ spec:
       required: ["spec"]
       properties:
         spec:
-          required: ["user_name", "secret_name", "priv", "database_name"]
+          required: ["user_name", "database_name", "priv"]
           properties:
             user_name:
               type: string
               minimum: 1
-            secret_name:
+            database_name:
               type: string
               minimum: 1
             priv:
-              type: string
-              minimum: 1
-            database_name:
               type: string
               minimum: 1
