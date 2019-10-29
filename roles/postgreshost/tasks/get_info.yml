@@ -36,17 +36,17 @@
   when: host_secret.resources[0].data[get_host_info_password_key] is not defined
 - name: get vars
   set_fact:
-    password: "{{ host_secret.resources[0].data[get_host_info_password_key] | b64decode }}"
+    admin_password: "{{ host_secret.resources[0].data[get_host_info_password_key] | b64decode }}"
     address: "{{ host_cr.resources[0].spec.address }}"
     port: "{{ host_cr.resources[0].spec.port }}"
-    user_name: "{{ host_cr.resources[0].spec.user_name }}"
+    admin_user_name: "{{ host_cr.resources[0].spec.user_name }}"
 - name: update output
   set_fact:
      res_dict: "{{ res_dict | default({}) | combine( { res_key: {
-        'password': password,
+        'admin_password': admin_password,
         'address': address,
         'port': port,
-        'user_name': user_name
+        'admin_user_name': admin_user_name
      }}, recursive=True ) }}"
   when: res_key is defined
 

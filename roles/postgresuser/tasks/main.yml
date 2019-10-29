@@ -1,7 +1,4 @@
 ---
-- name: import vars
-  include_vars:
-    file: vars.yml
 - name: read grants {{ meta.namespace }}
   k8s_facts:
     api_version: postgres.kabisa.nl/v1alpha1
@@ -70,9 +67,9 @@
     db: "{{ item.key }}"
     port: "{{ item.value.port }}"
     name: "{{ user_name }}"
-    login_password: "{{ item.value.password }}"
+    login_password: "{{ item.value.admin_password }}"
     login_host: "{{ item.value.address }}"
-    login_user: "{{ item.value.user_name }}"
+    login_user: "{{ item.value.admin_user_name }}"
     priv: "{{ item.value.priv }}"
     state: "{{ desired_state }}"
   loop: "{{ databases | dict2items }}"

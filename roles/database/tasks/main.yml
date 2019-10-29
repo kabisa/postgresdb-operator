@@ -13,11 +13,12 @@
     tasks_from: get_info
   vars:
     host: "{{ host }}"
-    namespace: "{{ namespace }}"
+    namespace: "{{ meta.namespace }}"
 - name: "Create a new database with name {{ database_name }}"
   postgresql_db:
     name: "{{ database_name }}"
     state: "{{ desired_state }}"
+    login_user: "{{ admin_user_name }}"
     login_host: "{{ address }}"
-    login_password: "{{ password }}"
+    login_password: "{{ admin_password }}"
     port: "{{ port }}"

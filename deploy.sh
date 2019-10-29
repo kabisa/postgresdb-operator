@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# for development purposed
+# for development purposes
 operator-sdk build kabisa/postgresdb-operator
 docker push kabisa/postgresdb-operator
 sleep 2
