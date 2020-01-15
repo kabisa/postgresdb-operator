@@ -1,0 +1,31 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: azblobscontainers.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: AzBlobsContainer
+    listKind: AzBlobsContainers
+    plural: azblobscontainers
+    singular: azblobscontainer
+  scope: Namespaced
+  subresources:
+    status: {}
+  version: v1alpha1
+  validation:
+    openAPIV3Schema:
+      required: ["spec"]
+      properties:
+        spec:
+          required: ["tenant_id", "storage_account", "storage_container"]
+          properties:
+            tenant_id:
+              type: string
+              minimum: 1
+            storage_account:
+              type: string
+              minimum: 1
+            storage_container:
+              type: string
+              minimum: 1

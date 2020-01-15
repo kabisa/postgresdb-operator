@@ -16,7 +16,7 @@
     kind: PostgresHost
     namespace: "{{ meta.namespace }}"
   register: hosts_result
-- name: read databases {{ meta.namespace }}
+- name: read databases in ns {{ meta.namespace }}
   k8s_facts:
     api_version: postgres.kabisa.nl/v1alpha1
     kind: Database

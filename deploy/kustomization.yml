@@ -1,10 +1,13 @@
 resources:
   - crds/postgres.kabisa.nl_databases_crd.yaml
+  - crds/postgres.kabisa.nl_database_backup_cron_job_crd.yaml
   - crds/postgres.kabisa.nl_postgreshosts_crd.yaml
   - crds/postgres.kabisa.nl_postgresusers_crd.yaml
   - crds/postgres.kabisa.nl_postgresusersgrant_crd.yaml
+  - crds/postgres.kabisa.nl_az_blobs_container_crd.yaml
+  - crds/postgres.kabisa.nl_az_blobs_user_crd.yaml
   - role.yaml
   - service_account.yaml
   - role_binding.yaml
   - operator.yaml
-# namespace: postgres
+namespace: patroni

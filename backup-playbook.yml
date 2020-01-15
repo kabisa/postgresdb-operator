@@ -1,0 +1,177 @@
+- name: make sure docker is installed
+  hosts: localhost
+  tasks:
+  - name: Include vars
+    include_vars:
+      file: vars.yml
+  - debug:
+      msg: '{{ meta.namespace }}'
+  # database
+  - name: read database {{ database_name }}
+    k8s_info:
+      api_version: postgres.kabisa.nl/v1alpha1
+      kind: Database
+      namespace: "{{ meta.namespace }}"
+      name: "{{ database_name }}"
+    register: databases_result
+  - fail:
+      msg: "database {{ database_name }} not found"
+    when: "databases_result.resources | length != 1"
+  - debug:
+      var: databases_result.resources[0]
+  # blobs user
+  - name: read blobs user
+    k8s_info:
+      api_version: postgres.kabisa.nl/v1alpha1
+      kind: AzBlobsUser
+      namespace: "{{ meta.namespace }}"
+      name: "{{ az_blobs_user }}"
+    register: blobs_user_result
+  - fail:
+      msg: "blobs user {{ az_blobs_user }} not found"
+    when: "blobs_user_result.resources | length != 1"
+  - debug:
+      var: blobs_user_result.resources[0]
+  # blobs container
+  - name: "read blobs container {{ az_blobs_container }}"
+    k8s_info:
+      api_version: postgres.kabisa.nl/v1alpha1
+      kind: AzBlobsContainer
+      namespace: "{{ meta.namespace }}"
+      name: "{{ az_blobs_container }}"
+    register: az_blobs_container_result
+  - debug:
+      var: az_blobs_container_result
+  - fail:
+      msg: "blobs container crd {{ az_blobs_container  }} not found"
+    when: "az_blobs_container_result.resources | length != 1"
+  # database host
+  - name: get host info
+    include_role:
+      name: postgreshost
+      tasks_from: get_info
+    vars:
+      host: "{{ databases_result.resources[0].spec.host }}"
+      namespace: "{{ meta.namespace }}"
+      res_key: "host_info"
+  - name: db host info
+    set_fact:
+      db_host_info: "{{ res_dict.host_info }}"
+  - debug:
+      var: db_host_info
+  # collect vars
+  - name: get vars
+    set_fact:
+      az_blobs_user_name: "{{ blobs_user_result.resources[0].spec.user_name }}"
+      az_blobs_user_secret_name: "{{ blobs_user_result.resources[0].spec.secret_name }}"
+      az_blobs_user_secret_key: "{{ blobs_user_result.resources[0].spec.secret_key | default('password') }}"
+      az_blobs_tenant_id: "{{ az_blobs_container_result.resources[0].spec.tenant_id }}"
+      az_blobs_storage_account: "{{ az_blobs_container_result.resources[0].spec.storage_account }}"
+      az_blobs_storage_container: "{{ az_blobs_container_result.resources[0].spec.storage_container }}"
+      pg_address: "{{ res_dict.host_info.address }}"
+      pg_user_name: "{{ res_dict.host_info.admin_user_name }}"
+      pg_user_secret_name: "{{ res_dict.host_info.admin_user_secret_name }}"
+      pg_user_secret_key: "{{ res_dict.host_info.admin_user_secret_key }}"
+      pg_port: "{{ res_dict.host_info.port }}"
+      pg_database_name: "{{ database_name }}"
+  - name: ensure scripts
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: pg-backup-scripts
+          namespace: "{{ meta.namespace }}"
+        data:
+          backup.sh: |
+            #!/bin/bash -e
+            pg_dump \
+                --format=custom \
+                --compress=9 \
+                --file=/pgdump/db_`date +%Y%m%d%H%M`.dump \
+                --no-owner \
+                --no-acl \
+                --host=$PGHOST \
+                --user=$PGUSER \
+                --port=$PGPORT \
+                $DATABASE
+          backup_az_blobs.sh: |
+            #!/bin/bash -e
+            # Only supports uploading with service principal for now.
+            # But should be fairly simple to expand with other methods.
+            LATEST_DUMP=`find /pgdump/ -type f | sort | tail -n 1`
+            LATEST_DUMP_BASE_NAME=$(basename "$LATEST_DUMP")
+            az login --service-principal -u $AZ_BLOBS_USER -p $AZ_BLOBS_USER_PW --tenant $AZ_BLOBS_TENANT_ID
+            az storage blob upload \
+              --account-name $AZ_BLOBS_STORAGE_ACCOUNT \
+              --container-name $AZ_BLOBS_CONTAINER \
+              --name LATEST_DUMP_BASE_NAME \
+              --file $LATEST_DUMP
+  - name: create a backup container
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Pod
+        metadata:
+          name: pg-backup
+          namespace: "{{ meta.namespace }}"
+        spec:
+          initContainers:
+            - name: pg-backup
+              image: "postgres:{{ pg_version | default('latest') }}"
+              env:
+                - name: PGHOST
+                  value: "{{ pg_address }}"
+                - name: PGUSER
+                  value: "{{ pg_user_name }}"
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ pg_user_secret_name }}"
+                      key: "{{ pg_user_secret_key }}"
+                - name: PGPORT
+                  value: "{{ pg_port }}"
+                - name: DATABASE
+                  value: "{{ pg_database_name }}"
+              command:
+                - "/scripts/backup.sh"
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+                - name: pgdump
+                  mountPath: /pgdump
+          containers:
+            - name: az-upload
+              image: microsoft/azure-cli
+              env:
+                - name: AZ_BLOBS_USER
+                  value: "{{ az_blobs_user_name }}"
+                - name: AZ_BLOBS_USER_PW
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ az_blobs_user_secret_name }}"
+                      key: "{{ az_blobs_user_secret_key }}"
+                - name: AZ_BLOBS_TENANT_ID
+                  value: "{{ az_blobs_tenant_id }}"
+                - name: AZ_BLOBS_STORAGE_ACCOUNT
+                  value: "{{ az_blobs_storage_account }}"
+                - name: AZ_BLOBS_CONTAINER
+                  value: "{{ az_blobs_storage_container }}"
+              command:
+                - tail
+                - "-f"
+                - "/dev/random"
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+                - name: pgdump
+                  mountPath: /pgdump
+          volumes:
+            - name: scripts
+              configMap:
+                name: pg-backup-scripts
+                defaultMode: 0777
+            - emptyDir: {}
+              name: pgdump
