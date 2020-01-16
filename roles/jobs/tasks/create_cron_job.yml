@@ -1,0 +1,22 @@
+- name: ensure no old version of cron job
+  k8s:
+    state: absent
+    definition:
+      apiVersion: batch/v1beta1
+      kind: CronJob
+      metadata:
+        name: pg-backup-cronjob
+        namespace: "{{ meta.namespace }}"
+- name: create cron job
+  k8s:
+    state: present
+    definition:
+      apiVersion: batch/v1beta1
+      kind: CronJob
+      metadata:
+        name: pg-backup-cronjob
+        namespace: "{{ meta.namespace }}"
+      spec:
+        schedule: "{{ cron_interval }}"
+        jobTemplate:
+          spec: "{{ job_spec }}"

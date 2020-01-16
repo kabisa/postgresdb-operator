@@ -1,0 +1,18 @@
+- name: create az blobs upload container definition
+  set_fact:
+    job_spec:
+      backoffLimit: 3 # max try 3 times
+      template:
+        spec:
+          restartPolicy: Never
+          initContainers:
+            - "{{ from_container }}"
+          containers:
+            - "{{ to_container }}"
+          volumes:
+            - name: scripts
+              configMap:
+                name: pg-backup-scripts
+                defaultMode: 0777
+            - emptyDir: {}
+              name: pgdump

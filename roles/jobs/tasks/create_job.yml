@@ -1,3 +1,12 @@
+- name: ensure no old version of backup job
+  k8s:
+    state: absent
+    definition:
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        name: pg-backup
+        namespace: "{{ meta.namespace }}"
 - name: create job
   k8s:
     state: present
@@ -5,22 +14,8 @@
       apiVersion: batch/v1
       kind: Job
       metadata:
-        name: pg-backup
+        name: pg-backup-job
         namespace: "{{ meta.namespace }}"
-      spec:
-        backoffLimit: 3 # max try 3 times
-        template:
-          spec:
-            restartPolicy: Never
-            initContainers:
-              - "{{ from_container }}"
-            containers:
-              - "{{ to_container }}"
-            volumes:
-              - name: scripts
-                configMap:
-                  name: pg-backup-scripts
-                  defaultMode: 0777
-              - emptyDir: {}
-                name: pgdump
+      spec: "{{ job_spec }}"
+
 

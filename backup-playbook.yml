@@ -35,23 +35,18 @@
     include_role:
       name: jobs
       tasks_from: container_def_az_blobs_upload
-  - name: ensure no old version of backup job
-    k8s:
-      state: absent
-      definition:
-        apiVersion: batch/v1
-        kind: Job
-        metadata:
-          name: pg-backup
-          namespace: "{{ meta.namespace }}"
   - debug:
       var: pg_dump_container
   - debug:
       var: az_blobs_upload_container
-  - name: create job
+  - name: create job spec
     include_role:
       name: jobs
-      tasks_from: create_job
+      tasks_from: create_job_spec
     vars:
       from_container: "{{ pg_dump_container }}"
       to_container: "{{ az_blobs_upload_container }}"
+  - name: create cron job
+    include_role:
+      name: jobs
+      tasks_from: create_cron_job
