@@ -1,0 +1,6 @@
+- name: create job
+  include_role:
+    name: jobs
+    tasks_from: backup
+  vars:
+    job_type: create_cron_job

@@ -7,6 +7,11 @@
       metadata:
         name: pg-backup-cronjob
         namespace: "{{ meta.namespace }}"
+# doing this at the same point in time that create_job does it
+- name: ensure scripts
+  include_role:
+    name: jobs
+    tasks_from: ensure_scripts
 - name: create cron job
   k8s:
     state: present

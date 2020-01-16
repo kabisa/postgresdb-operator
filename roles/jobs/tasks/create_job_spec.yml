@@ -1,4 +1,4 @@
-- name: create az blobs upload container definition
+- name: create job spec
   set_fact:
     job_spec:
       backoffLimit: 3 # max try 3 times
