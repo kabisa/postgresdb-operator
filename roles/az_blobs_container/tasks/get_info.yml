@@ -1,0 +1,36 @@
+# blobs user
+- name: read blobs user
+  k8s_info:
+    api_version: postgres.kabisa.nl/v1alpha1
+    kind: AzBlobsUser
+    namespace: "{{ meta.namespace }}"
+    name: "{{ az_blobs_user }}"
+  register: blobs_user_result
+- fail:
+    msg: "blobs user {{ az_blobs_user }} not found"
+  when: "blobs_user_result.resources | length != 1"
+- debug:
+    var: blobs_user_result.resources[0]
+# blobs container
+- name: "read blobs container {{ az_blobs_container }}"
+  k8s_info:
+    api_version: postgres.kabisa.nl/v1alpha1
+    kind: AzBlobsContainer
+    namespace: "{{ meta.namespace }}"
+    name: "{{ az_blobs_container }}"
+  register: az_blobs_container_result
+- debug:
+    var: az_blobs_container_result
+- fail:
+    msg: "blobs container crd {{ az_blobs_container  }} not found"
+  when: "az_blobs_container_result.resources | length != 1"
+- name: get vars
+  set_fact:
+    res_dict: "{{ res_dict | default({}) | combine( { res_key: {
+      'user_name' : blobs_user_result.resources[0].spec.user_name,
+      'user_secret_name' : blobs_user_result.resources[0].spec.secret_name,
+      'user_secret_key' : blobs_user_result.resources[0].spec.secret_key | default('password'),
+      'tenant_id' : az_blobs_container_result.resources[0].spec.tenant_id,
+      'storage_account' : az_blobs_container_result.resources[0].spec.storage_account,
+      'storage_container' : az_blobs_container_result.resources[0].spec.storage_container,
+    }}, recursive=True ) }}"

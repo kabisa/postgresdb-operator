@@ -1,0 +1,26 @@
+- name: create pg dump container definition
+  set_fact:
+    pg_dump_container:
+      name: pg-backup
+      image: "postgres:{{ from_database.pg_version | default('latest') }}"
+      env:
+        - name: PGHOST
+          value: "{{ from_database.pg_address }}"
+        - name: PGUSER
+          value: "{{ from_database.pg_user_name }}"
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ from_database.pg_user_secret_name }}"
+              key: "{{ from_database.pg_user_secret_key }}"
+        - name: PGPORT
+          value: "{{ from_database.pg_port }}"
+        - name: DATABASE
+          value: "{{ from_database.pg_database_name }}"
+      command:
+        - "/scripts/backup_postgres.sh"
+      volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: pgdump
+          mountPath: /pgdump
