@@ -1,6 +1,9 @@
 resources:
   - crds/postgres.kabisa.nl_databases_crd.yaml
   - crds/postgres.kabisa.nl_database_backup_cron_job_crd.yaml
+  - crds/postgres.kabisa.nl_database_backup_job_crd.yaml
+  - crds/postgres.kabisa.nl_database_copy_job_crd.yaml
+  - crds/postgres.kabisa.nl_database_restore_job_crd.yaml
   - crds/postgres.kabisa.nl_postgreshosts_crd.yaml
   - crds/postgres.kabisa.nl_postgresusers_crd.yaml
   - crds/postgres.kabisa.nl_postgresusersgrant_crd.yaml

@@ -1,20 +1,20 @@
 - name: ensure no old version of cron job
   k8s:
     state: absent
-    definition:
-      apiVersion: batch/v1beta1
-      kind: CronJob
-      metadata:
-        name: pg-backup-cronjob
-        namespace: "{{ meta.namespace }}"
+    api_version: batch/v1beta1
+    kind: CronJob
+    name: "pg-backup-cronjob-{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"
+  when: desired_state != "present"
 # doing this at the same point in time that create_job does it
 - name: ensure scripts
   include_role:
     name: jobs
     tasks_from: ensure_scripts
+  when: desired_state == "present"
 - name: create cron job
   k8s:
-    state: present
+    state: "{{ desired_state }}"
     definition:
       apiVersion: batch/v1beta1
       kind: CronJob
@@ -25,3 +25,4 @@
         schedule: "{{ cron_interval }}"
         jobTemplate:
           spec: "{{ job_spec }}"
+  when: desired_state == "present"

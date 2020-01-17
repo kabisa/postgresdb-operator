@@ -1,3 +1,4 @@
+---
 - name: test if host is defined
   fail:
     msg: 'the key host not defined'

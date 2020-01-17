@@ -33,6 +33,8 @@
   vars:
     from_container: "{{ pg_dump_container }}"
     to_container: "{{ az_blobs_upload_container }}"
+- debug:
+    var: job_type
 - name: create cron job
   include_role:
     name: jobs

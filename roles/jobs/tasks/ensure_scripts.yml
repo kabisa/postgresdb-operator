@@ -1,6 +1,6 @@
 - name: ensure scripts
   k8s:
-    state: present
+    state: "{{ desired_state }}"
     definition:
       apiVersion: v1
       kind: ConfigMap

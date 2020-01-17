@@ -12,26 +12,7 @@ What is required:
  
 ## Installation
 
-There are two options:
- - manually `kubectl create -f`
- - as a bundle use `kubectl create -k` (requires kubectl version >= 1.15 )
-
-### Manually
-
-```bash
-kubectl create -f deploy/crds/postgres.kabisa.nl_databases_crd.yaml
-kubectl create -f deploy/crds/postgres.kabisa.nl_postgreshosts_crd.yaml
-kubectl create -f deploy/role.yaml
-kubectl create -f deploy/service_account.yaml
-kubectl create -f deploy/role_binding.yaml
-kubectl create -f deploy/operator.yaml
-```
-
-### Kustomize bundle
-
-```bash
-kubectl create -k deploy
-```
+ - as a bundle use `kubectl create -k deploy` (requires kubectl version >= 1.15 )
 
 ## Usage
 

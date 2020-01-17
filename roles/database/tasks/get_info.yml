@@ -1,5 +1,6 @@
+---
 # database
-- name: read database {{ database_name }}
+- name: "read database {{ database_name }}"
   k8s_info:
     api_version: postgres.kabisa.nl/v1alpha1
     kind: Database

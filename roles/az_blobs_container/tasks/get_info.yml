@@ -1,3 +1,4 @@
+---
 # blobs user
 - name: read blobs user
   k8s_info:
