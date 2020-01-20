@@ -18,7 +18,7 @@ spec:
       required: ["spec"]
       properties:
         spec:
-          required: ["database_name"]
+          required: ["database_name", "file_name"]
           properties:
             database_name:
               type: string
@@ -27,3 +27,6 @@ spec:
               type: string
             az_blobs_user:
               type: string
+            file_name:
+              type: string
+              minimum: 1

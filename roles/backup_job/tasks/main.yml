@@ -1,8 +1,7 @@
 ---
-- name: set job type
-  set_fact:
-    job_type: create_job
-- name: create job
+- name: create backup job
   include_role:
     name: jobs
     tasks_from: backup
+  vars:
+    job_type: job

@@ -1,0 +1,28 @@
+- name: create az blobs upload container definition
+  set_fact:
+    az_blobs_download_container:
+      name: az-blobs-download
+      image: microsoft/azure-cli
+      env:
+        - name: AZ_BLOBS_USER
+          value: "{{ from_az_blobs.user_name }}"
+        - name: AZ_BLOBS_USER_PW
+          valueFrom:
+            secretKeyRef:
+              name: "{{ from_az_blobs.user_secret_name }}"
+              key: "{{ from_az_blobs.user_secret_key }}"
+        - name: AZ_BLOBS_TENANT_ID
+          value: "{{ from_az_blobs.tenant_id }}"
+        - name: AZ_BLOBS_STORAGE_ACCOUNT
+          value: "{{ from_az_blobs.storage_account }}"
+        - name: AZ_BLOBS_CONTAINER
+          value: "{{ from_az_blobs.storage_container }}"
+        - name: AZ_BLOBS_FILE_NAME
+          value: "{{ file_name }}"
+      command:
+        - "/scripts/download_az_blobs.sh"
+      volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: pgdump
+          mountPath: /pgdump

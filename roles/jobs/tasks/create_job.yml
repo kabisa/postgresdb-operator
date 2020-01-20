@@ -2,15 +2,9 @@
     var: meta
 - debug:
     var: job_spec
-- name: ensure no old version of backup job
-  k8s:
-    state: absent
-    api_version: batch/v1beta1
-    kind: Job
-    name: "pg-backup-job-{{ meta.name }}"
-    namespace: "{{ meta.namespace }}"
-  when: desired_state != "present"
-# this gives the job some time to be terminated first
+- name: generate random name
+  set_fact:
+    job_name: "pg-backup-job-{{ meta.name }}-{{ ansible_date_time.epoch | string | b64encode | regex_replace('=+', '') | lower }}"
 - name: ensure scripts
   include_role:
     name: jobs
@@ -23,7 +17,7 @@
       apiVersion: batch/v1
       kind: Job
       metadata:
-        name: "pg-backup-job-{{ meta.name }}"
+        name: "{{ job_name }}"
         namespace: "{{ meta.namespace }}"
       spec: "{{ job_spec }}"
   when: desired_state == "present"

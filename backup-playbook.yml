@@ -5,9 +5,8 @@
       include_vars:
         file: vars.yml
     - name: ensure no old version of cron job
-      k8s:
-        state: absent
-        api_version: batch/v1beta1
-        kind: CronJob
-        name: "pg-backup-cronjob-{{ meta.name }}"
-        namespace: "{{ meta.namespace }}"
+      include_role:
+        name: jobs
+        tasks_from: backup
+      vars:
+        job_type: job

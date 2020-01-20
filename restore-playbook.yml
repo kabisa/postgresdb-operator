@@ -1,0 +1,14 @@
+- name: RESTORE PLAYBOOK
+  hosts: localhost
+  tasks:
+  - name: Include vars
+    include_vars:
+      file: vars.yml
+#  - debug:
+#      msg: "{{ ansible_date_time.epoch | string | b64encode | regex_replace('=+', '')  }}"
+  - name: ensure no old version of cron job
+    include_role:
+      name: jobs
+      tasks_from: restore
+    vars:
+      job_type: job
