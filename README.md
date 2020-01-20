@@ -1,7 +1,7 @@
 # postgresdb-operator
 
-This is an operator build with Operator Framework Ansible. 
-Its goal is to manage database resources within a Postgres deployment. 
+This is an operator built with [Operator Framework](https://github.com/operator-framework/operator-sdk) Ansible. [Guide](https://github.com/operator-framework/operator-sdk/blob/master/doc/ansible/user-guide.md)
+Its goal is to manage database resources with `kubectl` within a Postgres deployment. Specifically to allow databases to be deployed from pipeline and set up users, grants and backups etc.
 It expects Postgres to be running already.
 
 What does/can it manage:
@@ -16,6 +16,7 @@ What does/can it manage:
 What is required:
  - a PostgresHost definition (make sure the user has rights to create and delete databases)
  - a secret that contains the Postgres admin password 
+ - a kubernetes cluster ;)
  
 ## Installation
 
