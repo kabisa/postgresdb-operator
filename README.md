@@ -184,3 +184,19 @@ kubectl get pods
 NAME                                        READY   STATUS      RESTARTS   AGE
 my-first-backup-job-mtu3otuxndg2ma-lfscw   0/1     Completed   0          3h50m
 ```
+
+### CronJob
+
+The operator allows you to create cron jobs in the same way as making a backup job. 
+The only difference is that you now need a `cron_interval` definition
+```yaml
+apiVersion: postgres.kabisa.nl/v1alpha1
+kind: DatabaseBackupCronJob
+metadata:
+  name: my-first-backup-cronjob
+spec:
+  database_name: example-database
+  az_blobs_container: pgdumps-daily
+  az_blobs_user: blobsuser
+  cron_interval: "9 1 * * *"
+```
