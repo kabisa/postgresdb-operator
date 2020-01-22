@@ -14,13 +14,18 @@ What does/can it manage:
  - database copies (as long as the versions are compatible)
  
 What is required:
- - a PostgresHost definition (make sure the user has rights to create and delete databases)
- - a secret that contains the Postgres admin password 
- - a kubernetes cluster ;)
+ - a kubernetes cluster
+ - a running postgres database (not necessarily inside the cluster)
+ - postgres credentials that can create and drop databases
+ - for backups to azure blobs: a service principal that has write access to azure blobs
+ - for restores from azure blobs: a service principal that has read access to azure blobs
+
  
 ## Installation
 
-The operator can be installed as bundle (requires kubectl version >= 1.15 )
+The operator can be installed as bundle (requires kubectl version >= 1.15 ) for this we use the relatively new feature [Kustomize](https://kustomize.io/) that allows us to do `kubectl create -k`. You can inspect the [kustomization.yml](deploy/kustomization.yml) and see that all Custom Resource Definitions resources are included there.
+
+First you will need to clone this repository and cd into the cloned directory.
 
 ```bash
 kubectl create -k deploy
