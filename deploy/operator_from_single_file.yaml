@@ -1,7 +1,444 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: azblobscontainers.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: AzBlobsContainer
+    listKind: AzBlobsContainers
+    plural: azblobscontainers
+    singular: azblobscontainer
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            storage_account:
+              minimum: 1
+              type: string
+            storage_container:
+              minimum: 1
+              type: string
+            tenant_id:
+              minimum: 1
+              type: string
+          required:
+          - tenant_id
+          - storage_account
+          - storage_container
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: azblobsusers.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: AzBlobsUser
+    listKind: AzBlobsUserList
+    plural: azblobsusers
+    singular: azblobsuser
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            secret_name:
+              minimum: 1
+              type: string
+            user_name:
+              minimum: 1
+              type: string
+          required:
+          - user_name
+          - secret_name
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: databasebackupcronjob.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: DatabaseBackupCronJob
+    listKind: DatabaseBackupCronJobs
+    plural: databasebackupcronjob
+    singular: databasebackupcronjob
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            az_blobs_container:
+              type: string
+            az_blobs_user:
+              type: string
+            cron_interval:
+              minimum: 1
+              type: string
+            database_name:
+              minimum: 1
+              type: string
+          required:
+          - database_name
+          - cron_interval
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: databasebackupjob.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: DatabaseBackupJob
+    listKind: DatabaseBackupJobs
+    plural: databasebackupjob
+    singular: databasebackupjob
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            az_blobs_container:
+              type: string
+            az_blobs_user:
+              type: string
+            database_name:
+              minimum: 1
+              type: string
+          required:
+          - database_name
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: databasecopyjob.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: DatabaseCopyJob
+    listKind: DatabaseCopyJobs
+    plural: databasecopyjob
+    singular: databasecopyjob
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            from_database_name:
+              minimum: 1
+              type: string
+            to_database_name:
+              minimum: 1
+              type: string
+          required:
+          - from_database_name
+          - to_database_name
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: databaserestorejob.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: DatabaseRestoreJob
+    listKind: DatabaseRestoreJobs
+    plural: databaserestorejob
+    singular: databaserestorejob
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            az_blobs_container:
+              type: string
+            az_blobs_user:
+              type: string
+            database_name:
+              minimum: 1
+              type: string
+            file_name:
+              minimum: 1
+              type: string
+          required:
+          - database_name
+          - file_name
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: databases.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: Database
+    listKind: DatabaseList
+    plural: databases
+    singular: database
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            database_name:
+              minimum: 1
+              type: string
+            host:
+              minimum: 1
+              type: string
+          required:
+          - host
+          - database_name
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: postgreshosts.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: PostgresHost
+    listKind: PostgresHostList
+    plural: postgreshosts
+    singular: postgreshost
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            address:
+              minimum: 1
+              type: string
+            port:
+              minimum: 1
+              type: integer
+            secret_key:
+              minimum: 1
+              type: string
+            secret_name:
+              minimum: 1
+              type: string
+            user_name:
+              minimum: 1
+              type: string
+          required:
+          - address
+          - user_name
+          - secret_name
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: postgresusergrants.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: PostgresUserGrant
+    listKind: PostgresUserGrantList
+    plural: postgresusergrants
+    singular: postgresusergrant
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            database_name:
+              minimum: 1
+              type: string
+            priv:
+              minimum: 1
+              type: string
+            user_name:
+              minimum: 1
+              type: string
+          required:
+          - user_name
+          - database_name
+          - priv
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: postgresusers.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: PostgresUser
+    listKind: PostgresUserList
+    plural: postgresusers
+    singular: postgresuser
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            secret_name:
+              minimum: 1
+              type: string
+            user_name:
+              minimum: 1
+              type: string
+          required:
+          - user_name
+          - secret_name
+      required:
+      - spec
+  version: v1alpha1
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgresdb-operator
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: postgresdb-operator
+  namespace: default
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - services/finalizers
+  - endpoints
+  - persistentvolumeclaims
+  - events
+  - configmaps
+  - secrets
+  verbs:
+  - '*'
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - replicasets
+  - statefulsets
+  verbs:
+  - '*'
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - servicemonitors
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - apps
+  resourceNames:
+  - postgresdb-operator
+  resources:
+  - deployments/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - replicasets
+  verbs:
+  - get
+- apiGroups:
+  - postgres.kabisa.nl
+  resources:
+  - '*'
+  - postgresusers
+  verbs:
+  - '*'
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  - cronjobs
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: postgresdb-operator
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: postgresdb-operator
+subjects:
+- kind: ServiceAccount
+  name: postgresdb-operator
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgresdb-operator
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -12,40 +449,40 @@ spec:
       labels:
         name: postgresdb-operator
     spec:
-      imagePullSecrets:
-        - name: regcred
-      serviceAccountName: postgresdb-operator
       containers:
-        - name: ansible
-          command:
-          - /usr/local/bin/ao-logs
-          - /tmp/ansible-operator/runner
-          - stdout
-          image: kabisa/postgresdb-operator
-          imagePullPolicy: Always
-          volumeMounts:
-          - mountPath: /tmp/ansible-operator/runner
-            name: runner
-            readOnly: true
-        - name: operator
-          image: kabisa/postgresdb-operator
-          imagePullPolicy: Always
-          volumeMounts:
-          - mountPath: /tmp/ansible-operator/runner
-            name: runner
-          env:
-            - name: WATCH_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: OPERATOR_NAME
-              value: "postgresdb-operator"
-            - name: ANSIBLE_GATHERING
-              value: explicit
+      - command:
+        - /usr/local/bin/ao-logs
+        - /tmp/ansible-operator/runner
+        - stdout
+        image: kabisa/postgresdb-operator
+        imagePullPolicy: Always
+        name: ansible
+        volumeMounts:
+        - mountPath: /tmp/ansible-operator/runner
+          name: runner
+          readOnly: true
+      - env:
+        - name: WATCH_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OPERATOR_NAME
+          value: postgresdb-operator
+        - name: ANSIBLE_GATHERING
+          value: explicit
+        image: kabisa/postgresdb-operator
+        imagePullPolicy: Always
+        name: operator
+        volumeMounts:
+        - mountPath: /tmp/ansible-operator/runner
+          name: runner
+      imagePullSecrets:
+      - name: regcred
+      serviceAccountName: postgresdb-operator
       volumes:
-        - name: runner
-          emptyDir: {}
+      - emptyDir: {}
+        name: runner

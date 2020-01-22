@@ -13,4 +13,3 @@ resources:
   - service_account.yaml
   - role_binding.yaml
   - operator.yaml
-namespace: patroni
