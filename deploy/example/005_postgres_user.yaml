@@ -1,0 +1,7 @@
+apiVersion: postgres.kabisa.nl/v1alpha1
+kind: PostgresUser
+metadata:
+  name: web-user
+spec:
+  user_name: web
+  secret_name: web-user-secret

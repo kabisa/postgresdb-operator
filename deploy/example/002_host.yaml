@@ -7,4 +7,4 @@ spec:
   port: 5432
   user_name: "postgres"
   secret_name: "postgres"
-  # secret_key: "defaults to password"
+  # secret_key: "defaults_to_password"  # change this if you want to use a different key in your secret yaml

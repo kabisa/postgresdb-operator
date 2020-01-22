@@ -21,9 +21,24 @@ What is required:
  - for restores from azure blobs: a service principal that has read access to azure blobs
 
  
+## Important notes
+
+ - Deleting a `Database` resource will also delete the postgres database. This is irreversible (if you don't have backups)
+ - The operator handles out-of-order creation of resources fairly well. But editing kubernetes `Secrets` wont retrigger the operator to run.
+That's why it is advisable to first create `Secrets` and create the depending resources afterwards.
+
 ## Installation
 
 The operator can be installed as bundle (requires kubectl version >= 1.15 ) for this we use the relatively new feature [Kustomize](https://kustomize.io/) that allows us to do `kubectl create -k`. You can inspect the [kustomization.yml](deploy/kustomization.yml) and see that all Custom Resource Definitions resources are included there.
+There's also the option to install straight from a single `kubctl create` however that can only be used to install into the `default` namespace
+
+### straight from the interwebs
+
+```bash
+kubectl create -f https://raw.githubusercontent.com/kabisa/postgresdb-operator/backups/deploy/operator_from_single_file.yaml
+```
+
+### Kustomized
 
 First you will need to clone this repository and cd into the cloned directory.
 
@@ -39,6 +54,18 @@ kubectl create -k deploy -n postgres
 
 ## Usage
 
+All of the definitions presented here are also available in the folder [deploy/examples](deploy/examples). The example yamls are numbered so that you can follow the "tutorial" easier.
+You can edit them and use `kubectl create -f <filename>` to use them in your cluster. 
+Do note that if you've installed the operator to a separate namespace you will have to extend the metadata as follows:
+
+```yaml
+metadata:
+  name: something
+  namespace: <your namespace here>
+```
+
+
+Let's get our hands dirty...
 First we need access to the Postgres instance. We'll put a password in a secret and describe our Postgres host
 
 Our password:
@@ -131,7 +158,7 @@ kind: AzBlobsContainer
 metadata:
   name: pgdumps-daily
 spec:
-  tenant_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx
+  tenant_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx   # find this in your azure console
   storage_account: backups
   storage_container: pgdumps-daily
 ```
@@ -147,8 +174,10 @@ spec:
   secret_name: blobs-user-secret
 ```
 
-A secret to store the password in
+A secret to store the password in. 
 ```yaml
+# It is no problem to create this secret only now. 
+# The creation of  `AzBlobsContainer` and `AzBlobsUser` does not trigger any operator action.
 apiVersion: v1
 kind: Secret
 metadata:

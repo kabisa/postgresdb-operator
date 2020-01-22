@@ -1,7 +1,0 @@
-apiVersion: postgres.kabisa.nl/v1alpha1
-kind: PostgresUser
-metadata:
-  name: example-postgresuser
-spec:
-  user_name: example-user
-  secret_name: example-user-secret

@@ -1,0 +1,7 @@
+apiVersion: postgres.kabisa.nl/v1alpha1
+kind: AzBlobsUser
+metadata:
+  name: blobsuser
+spec:
+  user_name: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx
+  secret_name: blobs-user-secret

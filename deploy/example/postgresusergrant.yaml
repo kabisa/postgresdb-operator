@@ -1,8 +1,0 @@
-apiVersion: postgres.kabisa.nl/v1alpha1
-kind: PostgresUserGrant
-metadata:
-  name: example-postgresuser-grant
-spec:
-  user_name: sentry
-  database_name: sentry
-  priv: ALL
