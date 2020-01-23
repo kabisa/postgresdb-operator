@@ -21,6 +21,8 @@ pip3 install -r requirements.txt
 
 # building the operator image
 
+Necessary when Ansible code has been changed
+
 ```bash
 operator-sdk build kabisa/postgresdb-operator
 docker push kabisa/postgresdb-operator

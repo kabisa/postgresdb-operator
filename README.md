@@ -5,12 +5,11 @@ Its goal is to manage database resources with `kubectl` within a Postgres deploy
 It expects Postgres to be running already.
 
 What does/can it manage:
- - database creation
- - database deletion
- - postgres users
- - postgres user grants
- - database backups (to azure blobs)
- - database restores (from azure blobs)
+ - database creation / deletion `Database`
+ - postgres users `PostgresUser`
+ - postgres user grants `PostgresUserGrant`
+ - database backups (to azure blobs) `DatabaseBackupJob`
+ - database restores (from azure blobs) `DatabaseRestoreJob`
  - database copies (as long as the versions are compatible)
  
 What is required:
@@ -26,6 +25,7 @@ What is required:
  - Deleting a `Database` resource will also delete the postgres database. This is irreversible (if you don't have backups)
  - The operator handles out-of-order creation of resources fairly well. But editing kubernetes `Secrets` wont retrigger the operator to run.
 That's why it is advisable to first create `Secrets` and create the depending resources afterwards.
+ - In resource definitions like that of `Database` or `DatabaseUser` the are two name fields. That of the resource definition / Kubernetes object (metadata->name) and that of the managed object itself. Eg. `database_name` and `user_name`. The resource names are used to refer to the Kubernetes object. For example if you give a grant to a `DatabaseUser` you give the name of the Kubernetes object, not the name of postgres user in the database. 
 
 ## Installation
 
@@ -63,6 +63,13 @@ metadata:
   name: something
   namespace: <your namespace here>
 ```
+
+If you want to tail the logs of the operator you can do so as follows:
+
+```bash
+kubectl logs -f <postgresdb-operator-pod-name> -n <namespace> -c ansible
+```
+
 
 
 Let's get our hands dirty...
@@ -217,6 +224,19 @@ kubectl get pods
 ```bash
 NAME                                        READY   STATUS      RESTARTS   AGE
 my-first-backup-job-mtu3otuxndg2ma-lfscw   0/1     Completed   0          3h50m
+```
+
+And also a restore job
+
+```yaml
+apiVersion: postgres.kabisa.nl/v1alpha1
+kind: DatabaseRestoreJob
+metadata:
+  name: my-first-restore-job
+spec:
+  database_name: example-database
+  az_blobs_container: pgdumps-daily
+  az_blobs_user: blobsuser
 ```
 
 ### CronJob
