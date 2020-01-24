@@ -1,0 +1,41 @@
+- name: get database info
+  include_role:
+    name: database
+    tasks_from: get_info
+  vars:
+    res_key: "from_database"
+- name: get az blobs container info
+  include_role:
+    name: az_blobs_container
+    tasks_from: get_info
+  vars:
+    res_key: "to_az_blobs"
+- name: get vars
+  set_fact:
+    to_az_blobs: "{{ res_dict.to_az_blobs }}"
+    from_database: "{{ res_dict.from_database }}"
+- name: get pg_dump container info
+  include_role:
+    name: jobs
+    tasks_from: container_def_pg_dump
+- name: get az blobs upload container info
+  include_role:
+    name: jobs
+    tasks_from: container_def_az_blobs_upload
+- debug:
+    var: pg_dump_container
+- debug:
+    var: az_blobs_upload_container
+- name: create job spec
+  include_role:
+    name: jobs
+    tasks_from: create_job_spec
+  vars:
+    from_container: "{{ pg_dump_container }}"
+    to_container: "{{ az_blobs_upload_container }}"
+- debug:
+    var: job_type
+- name: create job
+  include_role:
+    name: jobs
+    tasks_from: "create_{{ job_type }}"

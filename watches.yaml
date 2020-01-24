@@ -23,3 +23,27 @@
 #    name: finalizer.postgres.kabisa.nl
 #    vars:
 #      desired_state: absent
+- version: v1alpha1
+  group: postgres.kabisa.nl
+  kind: DatabaseBackupCronJob
+  role: /opt/ansible/roles/backup_cron_job
+  finalizer:
+    name: finalizer.postgres.kabisa.nl
+    vars:
+      desired_state: absent
+- version: v1alpha1
+  group: postgres.kabisa.nl
+  kind: DatabaseBackupJob
+  role: /opt/ansible/roles/backup_job
+  finalizer:
+    name: finalizer.postgres.kabisa.nl
+    vars:
+      desired_state: absent
+- version: v1alpha1
+  group: postgres.kabisa.nl
+  kind: DatabaseRestoreJob
+  role: /opt/ansible/roles/restore_job
+  finalizer:
+    name: finalizer.postgres.kabisa.nl
+    vars:
+      desired_state: absent

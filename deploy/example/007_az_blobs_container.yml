@@ -1,0 +1,8 @@
+apiVersion: postgres.kabisa.nl/v1alpha1
+kind: AzBlobsContainer
+metadata:
+  name: pgdumps-daily
+spec:
+  tenant_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx   # find this in your azure console
+  storage_account: backups
+  storage_container: pgdumps-daily

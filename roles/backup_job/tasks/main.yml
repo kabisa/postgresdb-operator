@@ -1,0 +1,7 @@
+---
+- name: create backup job
+  include_role:
+    name: jobs
+    tasks_from: backup
+  vars:
+    job_type: job

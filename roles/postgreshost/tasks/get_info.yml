@@ -1,3 +1,4 @@
+---
 - name: test if host is defined
   fail:
     msg: 'the key host not defined'
@@ -12,41 +13,44 @@
     kind: PostgresHost
     namespace: "{{ namespace }}"
     name: "{{ host }}"
-  register: host_cr
+  register: hosts_result
 - fail:
     msg: 'host "{{ host }}" not found'
-  when: "host_cr.resources | length == 0"
+  when: "hosts_result.resources | length != 1"
 - name: "read host {{ host }}"
   k8s_facts:
     kind: Secret
     namespace: "{{ namespace }}"
-    name: "{{ host_cr.resources[0].spec.secret_name }}"
+    name: "{{ hosts_result.resources[0].spec.secret_name }}"
   register: host_secret
 - fail:
-    msg: 'secret "{{ host_cr.resources[0].spec.secret_name  }}" not found'
+    msg: 'secret "{{ hosts_result.resources[0].spec.secret_name  }}" not found'
   when: "host_secret.resources | length != 1"
 - name: debug
   debug:
     var: host_secret
 - name: get password key
   set_fact:
-    get_host_info_password_key: '{{ host_cr.resources[0].spec.get("secret_key", "password") }}'
+    admin_user_secret_key: '{{ hosts_result.resources[0].spec.get("secret_key", "password") }}'
 - fail:
-    msg: 'the key "{{ get_host_info_password_key }}" is not available in secret "{{ host_cr.resources[0].spec.secret_name }}"'
-  when: host_secret.resources[0].data[get_host_info_password_key] is not defined
+    msg: 'the key "{{ admin_user_secret_key }}" is not available in secret "{{ hosts_result.resources[0].spec.secret_name }}"'
+  when: host_secret.resources[0].data[admin_user_secret_key] is not defined
 - name: get vars
   set_fact:
-    admin_password: "{{ host_secret.resources[0].data[get_host_info_password_key] | b64decode }}"
-    address: "{{ host_cr.resources[0].spec.address }}"
-    port: "{{ host_cr.resources[0].spec.port }}"
-    admin_user_name: "{{ host_cr.resources[0].spec.user_name }}"
+    admin_password: "{{ host_secret.resources[0].data[admin_user_secret_key] | b64decode }}"
+    address: "{{ hosts_result.resources[0].spec.address }}"
+    port: "{{ hosts_result.resources[0].spec.port }}"
+    admin_user_name: "{{ hosts_result.resources[0].spec.user_name }}"
+    admin_user_secret_name: "{{ hosts_result.resources[0].spec.secret_name }}"
 - name: update output
   set_fact:
      res_dict: "{{ res_dict | default({}) | combine( { res_key: {
         'admin_password': admin_password,
         'address': address,
         'port': port,
-        'admin_user_name': admin_user_name
+        'admin_user_name': admin_user_name,
+        'admin_user_secret_name': admin_user_secret_name,
+        'admin_user_secret_key': admin_user_secret_key
      }}, recursive=True ) }}"
   when: res_key is defined
 

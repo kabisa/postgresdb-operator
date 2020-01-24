@@ -1,0 +1,62 @@
+- name: ensure scripts
+  k8s:
+    # could be in use by other (cron)jobs created by the operator so don't just set state to absent
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: pg-backup-scripts
+        namespace: "{{ meta.namespace }}"
+      data:
+        backup_postgres.sh: |
+          #!/bin/bash -e
+          pg_dump \
+              --format=custom \
+              --compress=9 \
+              --file=/pgdump/db_`date +%Y%m%d%H%M`.dump \
+              --no-owner \
+              --no-acl \
+              --host=$PGHOST \
+              --user=$PGUSER \
+              --port=$PGPORT \
+              $DATABASE
+          echo "pg_dump done"
+        restore_postgres.sh: |
+          #!/bin/bash -e
+          LATEST_DUMP=`find /pgdump/ -type f | sort | tail -n 1`
+          pg_restore \
+              --host=$PGHOST \
+              --user=$PGUSER \
+              --port=$PGPORT \
+              --dbname=$DATABASE \
+              --single-transaction \
+              --no-owner \
+              --no-acl \
+              -n public \
+              $LATEST_DUMP
+          echo "pg_restore done"
+        backup_az_blobs.sh: |
+          #!/bin/bash -e
+          # Only supports uploading with service principal for now.
+          # But should be fairly simple to expand with other methods.
+          LATEST_DUMP=`find /pgdump/ -type f | sort | tail -n 1`
+          LATEST_DUMP_BASE_NAME=$(basename "$LATEST_DUMP")
+          az login --service-principal -u $AZ_BLOBS_USER -p $AZ_BLOBS_USER_PW --tenant $AZ_BLOBS_TENANT_ID
+          az storage blob upload \
+            --account-name $AZ_BLOBS_STORAGE_ACCOUNT \
+            --container-name $AZ_BLOBS_CONTAINER \
+            --name $LATEST_DUMP_BASE_NAME \
+            --file $LATEST_DUMP
+          echo "upload done"
+        download_az_blobs.sh: |
+          #!/bin/bash -e
+          # Only supports uploading with service principal for now.
+          # But should be fairly simple to expand with other methods.
+          az login --service-principal -u $AZ_BLOBS_USER -p $AZ_BLOBS_USER_PW --tenant $AZ_BLOBS_TENANT_ID
+          az storage blob download \
+            --account-name $AZ_BLOBS_STORAGE_ACCOUNT \
+            --container-name $AZ_BLOBS_CONTAINER \
+            --name $AZ_BLOBS_FILE_NAME \
+            --file /pgdump/$AZ_BLOBS_FILE_NAME
+          echo "download done"

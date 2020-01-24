@@ -1,0 +1,32 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: databaserestorejob.postgres.kabisa.nl
+spec:
+  group: postgres.kabisa.nl
+  names:
+    kind: DatabaseRestoreJob
+    listKind: DatabaseRestoreJobs
+    plural: databaserestorejob
+    singular: databaserestorejob
+  scope: Namespaced
+  subresources:
+    status: {}
+  version: v1alpha1
+  validation:
+    openAPIV3Schema:
+      required: ["spec"]
+      properties:
+        spec:
+          required: ["database_name", "file_name"]
+          properties:
+            database_name:
+              type: string
+              minimum: 1
+            az_blobs_container:
+              type: string
+            az_blobs_user:
+              type: string
+            file_name:
+              type: string
+              minimum: 1

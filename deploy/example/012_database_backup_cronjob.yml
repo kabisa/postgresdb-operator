@@ -1,0 +1,9 @@
+apiVersion: postgres.kabisa.nl/v1alpha1
+kind: DatabaseBackupCronJob
+metadata:
+  name: my-first-backup-cronjob
+spec:
+  database_name: example-database
+  az_blobs_container: pgdumps-daily
+  az_blobs_user: blobsuser
+  cron_interval: "9 1 * * *"

@@ -1,0 +1,26 @@
+- name: create az blobs upload container definition
+  set_fact:
+    az_blobs_upload_container:
+      name: az-blobs-upload
+      image: microsoft/azure-cli
+      env:
+        - name: AZ_BLOBS_USER
+          value: "{{ to_az_blobs.user_name }}"
+        - name: AZ_BLOBS_USER_PW
+          valueFrom:
+            secretKeyRef:
+              name: "{{ to_az_blobs.user_secret_name }}"
+              key: "{{ to_az_blobs.user_secret_key }}"
+        - name: AZ_BLOBS_TENANT_ID
+          value: "{{ to_az_blobs.tenant_id }}"
+        - name: AZ_BLOBS_STORAGE_ACCOUNT
+          value: "{{ to_az_blobs.storage_account }}"
+        - name: AZ_BLOBS_CONTAINER
+          value: "{{ to_az_blobs.storage_container }}"
+      command:
+        - "/scripts/backup_az_blobs.sh"
+      volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: pgdump
+          mountPath: /pgdump

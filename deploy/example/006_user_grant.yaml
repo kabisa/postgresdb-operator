@@ -1,7 +1,8 @@
 apiVersion: postgres.kabisa.nl/v1alpha1
-kind: Database
+kind: PostgresUserGrant
 metadata:
-  name: example-database
+  name: web-user-grant
 spec:
-  host: example-host
+  user_name: web-user
   database_name: example-database
+  priv: ALL

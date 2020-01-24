@@ -16,7 +16,7 @@
     kind: PostgresHost
     namespace: "{{ meta.namespace }}"
   register: hosts_result
-- name: read databases {{ meta.namespace }}
+- name: read databases in ns {{ meta.namespace }}
   k8s_facts:
     api_version: postgres.kabisa.nl/v1alpha1
     kind: Database
@@ -24,7 +24,7 @@
   register: databases_result
 - name: get database_hosts
   set_fact:
-    databases: "{{ databases | combine( { item.spec.database_name: {'host': item.spec.host }}, recursive=True ) }}"
+    databases: "{{ databases | combine( { item.metadata.name: {'host': item.spec.host, 'database_name': item.spec.database_name }}, recursive=True ) }}"
   loop: "{{ databases_result.resources | list }}"
   when: item.spec.database_name in databases
 - name: get host info
@@ -64,7 +64,7 @@
     grantee_password: "{{ grantee_secret.resources[0].data[password_key] }}"
 - name: Connect to database, create user, and grant privileges
   postgresql_user:
-    db: "{{ item.key }}"
+    db: "{{ item.value.database_name }}"
     port: "{{ item.value.port }}"
     name: "{{ user_name }}"
     login_password: "{{ item.value.admin_password }}"

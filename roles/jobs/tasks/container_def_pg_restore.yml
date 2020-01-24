@@ -1,0 +1,26 @@
+- name: create pg dump container definition
+  set_fact:
+    pg_restore_container:
+      name: pg-restore
+      image: "postgres:{{ to_database.pg_version | default('latest') }}"
+      env:
+        - name: PGHOST
+          value: "{{ to_database.pg_address }}"
+        - name: PGUSER
+          value: "{{ to_database.pg_user_name }}"
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ to_database.pg_user_secret_name }}"
+              key: "{{ to_database.pg_user_secret_key }}"
+        - name: PGPORT
+          value: "{{ to_database.pg_port }}"
+        - name: DATABASE
+          value: "{{ to_database.pg_database_name }}"
+      command:
+        - "/scripts/restore_postgres.sh"
+      volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: pgdump
+          mountPath: /pgdump

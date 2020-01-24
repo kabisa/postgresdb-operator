@@ -60,3 +60,10 @@ rules:
   - postgresusers
   verbs:
   - '*'
+- apiGroups:
+  - "batch"
+  resources:
+  - jobs
+  - cronjobs
+  verbs:
+  - '*'

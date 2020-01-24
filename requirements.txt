@@ -1,1 +1,3 @@
 psycopg2-binary
+ansible==2.9.2
+openshift==0.10.1

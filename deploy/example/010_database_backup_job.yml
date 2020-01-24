@@ -1,0 +1,8 @@
+apiVersion: postgres.kabisa.nl/v1alpha1
+kind: DatabaseBackupJob
+metadata:
+  name: my-first-backup-job
+spec:
+  database_name: example-database
+  az_blobs_container: pgdumps-daily
+  az_blobs_user: blobsuser
