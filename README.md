@@ -26,6 +26,7 @@ What is required:
  - The operator handles out-of-order creation of resources fairly well. But editing kubernetes `Secrets` wont retrigger the operator to run.
 That's why it is advisable to first create `Secrets` and create the depending resources afterwards.
  - In resource definitions like that of `Database` or `DatabaseUser` the are two name fields. That of the resource definition / Kubernetes object (metadata->name) and that of the managed object itself. Eg. `database_name` and `user_name`. The resource names are used to refer to the Kubernetes object. For example if you give a grant to a `DatabaseUser` you give the name of the Kubernetes object, not the name of postgres user in the database. 
+ - Operations by the operator (backup jobs, restore jobs and copy jobs) have been implemented as a 2-stage process. The first part will be performed by an [initContainer](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) the second part will be performed by the "main" container. This means when you want to see the logs of such a container you will have to know the name of the `initContainer`
 
 ## Installation
 
@@ -69,8 +70,6 @@ If you want to tail the logs of the operator you can do so as follows:
 ```bash
 kubectl logs -f <postgresdb-operator-pod-name> -n <namespace> -c ansible
 ```
-
-
 
 Let's get our hands dirty...
 First we need access to the Postgres instance. We'll put a password in a secret and describe our Postgres host
@@ -226,6 +225,17 @@ NAME                                        READY   STATUS      RESTARTS   AGE
 my-first-backup-job-mtu3otuxndg2ma-lfscw   0/1     Completed   0          3h50m
 ```
 
+In case something goes wrong you can see the logs as follows:
+
+- The backup container:
+```bash
+kubectl logs <pod name> -n <your namespace> -c pg-backup
+```
+- The upload container (specifying the container name is optional):
+```bash
+kubectl logs <pod name> -n <your namespace> [ -c az-blobs-upload ]
+```
+
 And also a restore job
 
 ```yaml
@@ -237,6 +247,19 @@ spec:
   database_name: example-database
   az_blobs_container: pgdumps-daily
   az_blobs_user: blobsuser
+  file_name: file-name-in-az-blobs.dump 
+```
+
+Checking the logs for the restore job
+
+- The download container:
+```bash
+kubectl logs <pod name> -n <your namespace> -c az-blobs-download
+```
+
+- The restore container (specifying the container name is optional):
+```bash
+kubectl logs <pod name> -n <your namespace> -c pg-restore
 ```
 
 ### CronJob
