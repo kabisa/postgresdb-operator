@@ -35,6 +35,6 @@
       'pg_user_secret_name': res_dict.host_info.admin_user_secret_name,
       'pg_user_secret_key': res_dict.host_info.admin_user_secret_key,
       'pg_port': res_dict.host_info.port,
-      'pg_database_name': database_name,
+      'pg_database_name': databases_result.resources[0].spec.database_name,
       'pg_version': pg_version | default('latest')
     }}, recursive=True ) }}"
