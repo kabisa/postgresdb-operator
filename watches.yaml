@@ -47,3 +47,11 @@
     name: finalizer.postgres.kabisa.nl
     vars:
       desired_state: absent
+- version: v1alpha1
+  group: postgres.kabisa.nl
+  kind: DatabaseCopyJob
+  role: /opt/ansible/roles/copy_job
+  finalizer:
+    name: finalizer.postgres.kabisa.nl
+    vars:
+      desired_state: absent
