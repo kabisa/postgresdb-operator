@@ -1,6 +1,6 @@
 ---
 - name: read grants {{ meta.namespace }}
-  k8s_facts:
+  k8s_info:
     api_version: postgres.kabisa.nl/v1alpha1
     kind: PostgresUserGrant
     namespace: "{{ meta.namespace }}"
@@ -14,7 +14,7 @@
   loop: "{{ grants_result.resources | list }}"
   when: item.spec.user_name == user_name
 - name: read databases in ns {{ meta.namespace }}
-  k8s_facts:
+  k8s_info:
     api_version: postgres.kabisa.nl/v1alpha1
     kind: Database
     namespace: "{{ meta.namespace }}"
@@ -24,16 +24,14 @@
     databases: "{{ databases | combine( { item.metadata.name: {'host': item.spec.host, 'database_name': item.spec.database_name }}, recursive=True ) }}"
   loop: "{{ databases_result.resources | list }}"
   when: item.spec.database_name in databases
-- name: get host info
+- name: get host info for databases
   include_role:
-    name: postgreshost
-    tasks_from: get_info
+    name: postgresuser
+    tasks_from: get_host_info_for_databases
   vars:
-    host: "{{ item.value.host }}"
-    namespace: "{{ meta.namespace }}"
-    res_key: "{{ item.key }}"
+    item: item
   loop: "{{ databases | dict2items }}"
-- name: get database_hosts
+- name: store database_hosts results
   set_fact:
     databases: "{{ databases | combine( { item.key: item.value}, recursive=True ) }}"
   loop: "{{ res_dict | dict2items }}"

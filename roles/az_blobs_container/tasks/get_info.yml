@@ -7,7 +7,8 @@
     namespace: "{{ meta.namespace }}"
     name: "{{ az_blobs_user }}"
   register: blobs_user_result
-- fail:
+- name: check results
+  fail:
     msg: "blobs user {{ az_blobs_user }} not found"
   when: "blobs_user_result.resources | length != 1"
 - debug:
@@ -22,7 +23,8 @@
   register: az_blobs_container_result
 - debug:
     var: az_blobs_container_result
-- fail:
+- name: check results
+  fail:
     msg: "blobs container crd {{ az_blobs_container  }} not found"
   when: "az_blobs_container_result.resources | length != 1"
 - name: get vars

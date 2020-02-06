@@ -1,0 +1,14 @@
+- name: get host info try
+  block:
+  - name: get host info
+    include_role:
+      name: postgreshost
+      tasks_from: get_info
+    vars:
+      host: "{{ item.value.host }}"
+      namespace: "{{ meta.namespace }}"
+      res_key: "{{ item.key }}"
+    loop: "{{ databases | dict2items }}"
+  rescue:
+    - debug:
+        msg: 'unable to get host info'
