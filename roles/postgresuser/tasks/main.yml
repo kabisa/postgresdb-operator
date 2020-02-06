@@ -5,17 +5,14 @@
     kind: PostgresUserGrant
     namespace: "{{ meta.namespace }}"
   register: grants_result
+- name: instantiate variable
+  set_fact:
+    databases: {}
 - name: get database_privs
   set_fact:
-    databases: "{{ databases | default({}) | combine( {item.spec.database_name: {'priv': item.spec.priv} } ) }}"
+    databases: "{{ databases | combine( {item.spec.database_name: {'priv': item.spec.priv} } ) }}"
   loop: "{{ grants_result.resources | list }}"
   when: item.spec.user_name == user_name
-- name: read hosts {{ meta.namespace }}
-  k8s_facts:
-    api_version: postgres.kabisa.nl/v1alpha1
-    kind: PostgresHost
-    namespace: "{{ meta.namespace }}"
-  register: hosts_result
 - name: read databases in ns {{ meta.namespace }}
   k8s_facts:
     api_version: postgres.kabisa.nl/v1alpha1
@@ -43,33 +40,15 @@
 - name: debug
   debug:
     var: databases
-- name: "read user(grantee) password"
-  k8s_facts:
-    kind: Secret
-    namespace: "{{ meta.namespace }}"
-    name: "{{ secret_name }}"
-  register: grantee_secret
-- fail:
-    msg: 'secret "{{ secret_name }}" not found'
-  when: "grantee_secret.resources | length != 1"
-- name: set password key
-  set_fact:
-    password_key: password
-  when: password_key is not defined
-- fail:
-    msg: 'the key "{{ password_key }}" is not available in secret "{{ secret_name }}"'
-  when: grantee_secret.resources[0].data[password_key] is not defined
-- name: get vars
-  set_fact:
-    grantee_password: "{{ grantee_secret.resources[0].data[password_key] }}"
-- name: Connect to database, create user, and grant privileges
-  postgresql_user:
-    db: "{{ item.value.database_name }}"
-    port: "{{ item.value.port }}"
-    name: "{{ user_name }}"
-    login_password: "{{ item.value.admin_password }}"
-    login_host: "{{ item.value.address }}"
-    login_user: "{{ item.value.admin_user_name }}"
-    priv: "{{ item.value.priv }}"
-    state: "{{ desired_state }}"
-  loop: "{{ databases | dict2items }}"
+- name: create user/grant
+  include_role:
+    name: postgreshost
+    tasks_from: create
+  when:
+    - desired_state == "present"
+    - databases | lenght > 0
+- name: drop user/grant
+  include_role:
+    name: postgreshost
+    tasks_from: drop
+  when: desired_state != "present" or databases | lenght == 0

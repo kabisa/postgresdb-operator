@@ -1,0 +1,20 @@
+- name: Connect to database, drop user
+  postgresql_user:
+    db: "{{ item.value.database_name }}"
+    port: "{{ item.value.port }}"
+    name: "{{ user_name }}"
+    login_password: "{{ item.value.admin_password }}"
+    login_host: "{{ item.value.address }}"
+    login_user: "{{ item.value.admin_user_name }}"
+    state: absent
+  loop: "{{ databases | dict2items }}"
+  when: databases | lenght > 0
+- name: Connect to host, drop user (if no grants at all)
+  postgresql_user:
+    port: "{{ item.value.port }}"
+    name: "{{ user_name }}"
+    login_password: "{{ item.value.admin_password }}"
+    login_host: "{{ item.value.address }}"
+    login_user: "{{ item.value.admin_user_name }}"
+    state: absent
+  when: databases | lenght == 0
