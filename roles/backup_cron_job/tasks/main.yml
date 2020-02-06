@@ -5,3 +5,13 @@
     tasks_from: backup
   vars:
     job_type: cron_job
+    job_action: backup
+  when: desired_state == "present"
+- name: remove backup cron job
+  include_role:
+    name: jobs
+    tasks_from: remove_cron_job
+  vars:
+    job_type: cron_job
+    job_action: backup
+  when: desired_state != "present"

@@ -5,3 +5,13 @@
     tasks_from: copy
   vars:
     job_type: job
+    job_action: copy
+  when: desired_state == "present"
+- name: remove copy job
+  include_role:
+    name: jobs
+    tasks_from: remove_job
+  vars:
+    job_type: job
+    job_action: copy
+  when: desired_state != "present"

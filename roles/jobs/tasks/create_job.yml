@@ -1,19 +1,16 @@
-- debug:
-    var: meta
-- debug:
-    var: job_spec
-- name: generate random name
+#- debug:
+#    var: job_spec
+- name: generate name
   set_fact:
-    job_name: "pg-backup-job-{{ meta.name }}"
+    job_name: "pg-{{ job_action }}-job-{{ meta.name }}"
 - name: ensure scripts
   include_role:
     name: jobs
     tasks_from: ensure_scripts
-  when: desired_state == "present"
 - name: create job
   k8s:
     apply: yes
-    state: "{{ desired_state }}"
+    state: present
     definition:
       apiVersion: batch/v1
       kind: Job
@@ -21,5 +18,3 @@
         name: "{{ job_name }}"
         namespace: "{{ meta.namespace }}"
       spec: "{{ job_spec }}"
-  when: desired_state == "present"
-

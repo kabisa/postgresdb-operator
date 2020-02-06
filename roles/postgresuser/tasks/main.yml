@@ -24,12 +24,15 @@
     databases: "{{ databases | combine( { item.metadata.name: {'host': item.spec.host, 'database_name': item.spec.database_name }}, recursive=True ) }}"
   loop: "{{ databases_result.resources | list }}"
   when: item.spec.database_name in databases
+- name: init res_dict
+  set_fact:
+    res_dict: "{{ res_dict | default({}) }}"
 - name: get host info for databases
   include_role:
     name: postgresuser
     tasks_from: get_host_info_for_databases
   vars:
-    item: item
+    database_item: item
   loop: "{{ databases | dict2items }}"
 - name: store database_hosts results
   set_fact:
@@ -47,6 +50,6 @@
     - databases | lenght > 0
 - name: drop user/grant
   include_role:
-    name: postgreshost
+    name: postgresuser
     tasks_from: drop
-  when: desired_state != "present" or databases | lenght == 0
+  when: (desired_state != "present") or (databases | length == 0)

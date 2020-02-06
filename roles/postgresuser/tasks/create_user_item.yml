@@ -1,0 +1,16 @@
+- name: create user for databases
+  block:
+  - name: Connect to database, create user, and grant privileges
+    postgresql_user:
+      db: "{{ database_item.value.database_name }}"
+      port: "{{ database_item.value.port }}"
+      name: "{{ user_name }}"
+      login_password: "{{ database_item.value.admin_password }}"
+      login_host: "{{ database_item.value.address }}"
+      login_user: "{{ database_item.value.admin_user_name }}"
+      priv: "{{ database_item.value.priv }}"
+      state: "{{ desired_state }}"
+      password: "{{ grantee_password }}"
+  rescue:
+    - debug:
+        msg: 'failed create user / grant privileges'

@@ -2,6 +2,16 @@
 - name: create restore job
   include_role:
     name: jobs
-    tasks_from: restore
+    tasks_from: create_restore
   vars:
     job_type: job
+    job_action: restore
+  when: desired_state == "present"
+- name: remove restore job
+  include_role:
+    name: jobs
+    tasks_from: remove_job
+  vars:
+    job_type: job
+    job_action: restore
+  when: desired_state != "present"

@@ -5,9 +5,9 @@
       name: postgreshost
       tasks_from: get_info
     vars:
-      host: "{{ item.value.host }}"
+      host: "{{ database_item.value.host }}"
       namespace: "{{ meta.namespace }}"
-      res_key: "{{ item.key }}"
+      res_key: "{{ database_item.key }}"
     loop: "{{ databases | dict2items }}"
   rescue:
     - debug:

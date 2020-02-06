@@ -1,0 +1,12 @@
+#- debug:
+#    var: job_spec
+- name: generate name
+  set_fact:
+    job_name: "pg-{{ job_action }}-{{ meta.name }}"
+- name: remove job
+  k8s:
+    api_version: batch/v1
+    state: absent
+    kind: Job
+    name: "{{ job_name }}"
+    namespace: "{{ meta.namespace }}"
