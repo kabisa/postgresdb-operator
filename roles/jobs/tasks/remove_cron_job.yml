@@ -1,0 +1,7 @@
+- name: ensure no old version of cron job
+  k8s:
+    state: absent
+    api_version: batch/v1beta1
+    kind: CronJob
+    name: "pg-backup-{{ job_action }}-{{ meta.name }}"
+    namespace: "{{ meta.namespace }}"

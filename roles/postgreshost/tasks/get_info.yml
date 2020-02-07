@@ -8,22 +8,24 @@
     msg: 'the key namespace not defined'
   when: "namespace is not defined"
 - name: "read host {{ host }} resource"
-  k8s_facts:
+  k8s_info:
     api_version: postgres.kabisa.nl/v1alpha1
     kind: PostgresHost
     namespace: "{{ namespace }}"
     name: "{{ host }}"
   register: hosts_result
-- fail:
+- name: check results
+  fail:
     msg: 'host "{{ host }}" not found'
   when: "hosts_result.resources | length != 1"
 - name: "read host {{ host }}"
-  k8s_facts:
+  k8s_info:
     kind: Secret
     namespace: "{{ namespace }}"
     name: "{{ hosts_result.resources[0].spec.secret_name }}"
   register: host_secret
-- fail:
+- name: check results
+  fail:
     msg: 'secret "{{ hosts_result.resources[0].spec.secret_name  }}" not found'
   when: "host_secret.resources | length != 1"
 - name: debug
@@ -32,7 +34,8 @@
 - name: get password key
   set_fact:
     admin_user_secret_key: '{{ hosts_result.resources[0].spec.get("secret_key", "password") }}'
-- fail:
+- name: check results
+  fail:
     msg: 'the key "{{ admin_user_secret_key }}" is not available in secret "{{ hosts_result.resources[0].spec.secret_name }}"'
   when: host_secret.resources[0].data[admin_user_secret_key] is not defined
 - name: get vars

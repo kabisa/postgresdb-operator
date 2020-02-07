@@ -1,7 +1,7 @@
 ---
 # tasks file for database
 - name: "read host {{ host }} resource"
-  k8s_facts:
+  k8s_info:
     api_version: postgres.kabisa.nl/v1alpha1
     kind: PostgresHost
     namespace: "{{ meta.namespace }}"

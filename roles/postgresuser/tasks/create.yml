@@ -1,0 +1,28 @@
+- name: "read user(grantee) password"
+  k8s_info:
+    kind: Secret
+    namespace: "{{ meta.namespace }}"
+    name: "{{ secret_name }}"
+  register: grantee_secret
+- name: check results
+  fail:
+    msg: 'secret "{{ secret_name }}" not found'
+  when: grantee_secret.resources | length != 1
+- name: set password key
+  set_fact:
+    password_key: password
+  when: password_key is not defined
+- name: check results
+  fail:
+    msg: 'the key "{{ password_key }}" is not available in secret "{{ secret_name }}"'
+  when: grantee_secret.resources[0].data[password_key] is not defined
+- name: get vars
+  set_fact:
+    grantee_password: "{{ grantee_secret.resources[0].data[password_key] }}"
+- name: create role loop
+  include_role:
+    name: postgresuser
+    tasks_from: create_user_item
+  loop: "{{ databases | dict2items }}"
+  loop_control:
+    loop_var: database_item

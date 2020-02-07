@@ -1,0 +1,10 @@
+- name: Strip privileges
+  postgresql_user:
+    db: "{{ item.value.database_name }}"
+    name: "{{ user_name }}"
+    login_password: "{{ item.value.admin_password }}"
+    login_host: "{{ item.value.address }}"
+    login_user: "{{ item.value.admin_user_name }}"
+    priv: "ALL"
+    state: absent
+  loop: "{{ databases | dict2items }}"
