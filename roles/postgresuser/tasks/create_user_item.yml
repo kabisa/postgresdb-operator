@@ -1,5 +1,7 @@
 - name: create user for databases
   block:
+  - debug:
+      var: database_item
   - name: Connect to database, create user, and grant privileges
     postgresql_user:
       db: "{{ database_item.value.database_name }}"

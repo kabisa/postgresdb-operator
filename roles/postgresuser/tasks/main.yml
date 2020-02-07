@@ -31,9 +31,9 @@
   include_role:
     name: postgresuser
     tasks_from: get_host_info_for_databases
-  vars:
-    database_item: item
   loop: "{{ databases | dict2items }}"
+  loop_control:
+    loop_var: database_item
 - name: store database_hosts results
   set_fact:
     databases: "{{ databases | combine( { item.key: item.value}, recursive=True ) }}"
@@ -43,11 +43,11 @@
     var: databases
 - name: create user/grant
   include_role:
-    name: postgreshost
+    name: postgresuser
     tasks_from: create
   when:
     - desired_state == "present"
-    - databases | lenght > 0
+    - databases | length > 0
 - name: drop user/grant
   include_role:
     name: postgresuser

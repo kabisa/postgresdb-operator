@@ -23,6 +23,6 @@
   include_role:
     name: postgresuser
     tasks_from: create_user_item
-  vars:
-    database_item: item
   loop: "{{ databases | dict2items }}"
+  loop_control:
+    loop_var: database_item
