@@ -43,6 +43,3 @@
     priv: "ALL"
     state: absent
   loop: "{{ databases | dict2items }}"
-
-
-# REVOKE ALL PRIVILEGES ON DATABASE "fix-broken-docker-builds" FROM "fix-broken-docker-builds-web";
