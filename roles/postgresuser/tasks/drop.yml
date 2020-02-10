@@ -1,4 +1,39 @@
-- name: Strip privileges
+- name: strip database privs
+  postgresql_privs:
+    db: postgres
+    privs: ALL
+    type: database
+    obj: "{{ item.value.database_name }}"
+    role: "{{ user_name }}"
+    login_password: "{{ item.value.admin_password }}"
+    login_host: "{{ item.value.address }}"
+    login_user: "{{ item.value.admin_user_name }}"
+    state: absent
+  loop: "{{ databases | dict2items }}"
+- name: public schema privs
+  postgresql_privs:
+    db: "{{ item.value.database_name }}"
+    privs: ALL
+    role: "{{ user_name }}"
+    login_password: "{{ item.value.admin_password }}"
+    login_host: "{{ item.value.address }}"
+    login_user: "{{ item.value.admin_user_name }}"
+    type: schema
+    objs: public
+    state: absent
+  loop: "{{ databases | dict2items }}"
+- name: all in schema privs
+  postgresql_privs:
+    db: "{{ item.value.database_name }}"
+    privs: ALL
+    role: "{{ user_name }}"
+    login_password: "{{ item.value.admin_password }}"
+    login_host: "{{ item.value.address }}"
+    login_user: "{{ item.value.admin_user_name }}"
+    objs: ALL_IN_SCHEMA
+    state: absent
+  loop: "{{ databases | dict2items }}"
+- name: remove user
   postgresql_user:
     db: "{{ item.value.database_name }}"
     name: "{{ user_name }}"
