@@ -121,6 +121,8 @@ spec:
       properties:
         spec:
           properties:
+            after_action_sql:
+              type: string
             az_blobs_container:
               type: string
             az_blobs_user:
@@ -153,6 +155,8 @@ spec:
       properties:
         spec:
           properties:
+            after_action_sql:
+              type: string
             from_database_name:
               minimum: 1
               type: string
@@ -185,6 +189,8 @@ spec:
       properties:
         spec:
           properties:
+            after_action_sql:
+              type: string
             az_blobs_container:
               type: string
             az_blobs_user:

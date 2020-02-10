@@ -1,3 +1,32 @@
+- name: define volumes
+  set_fact:
+    volumes:
+      - name: scripts
+        configMap:
+          name: pg-backup-scripts
+          defaultMode: 0777
+      - emptyDir: {}
+        name: pgdump
+- name: define after action sql container
+  include_role:
+    name: jobs
+    tasks_from: after_action_sql
+  when: after_action_sql is defined
+- name: set steps
+  set_fact:
+    init_containers:
+      - "{{ from_container }}"
+      - "{{ to_container }}"
+    end_container: # this should just be one
+      - "{{ after_action_sql_container }}"
+  when: after_action_sql is defined
+- name: set steps
+  set_fact:
+    init_containers:
+      - "{{ from_container }}"
+    end_container: # this should just be one
+      - "{{ to_container }}"
+  when: after_action_sql is not defined
 - name: create job spec
   set_fact:
     job_spec:
@@ -5,14 +34,6 @@
       template:
         spec:
           restartPolicy: Never
-          initContainers:
-            - "{{ from_container }}"
-          containers:
-            - "{{ to_container }}"
-          volumes:
-            - name: scripts
-              configMap:
-                name: pg-backup-scripts
-                defaultMode: 0777
-            - emptyDir: {}
-              name: pgdump
+          initContainers: "{{ init_containers }}"
+          containers: "{{ end_container }}"
+          volumes: "{{ volumes }}"

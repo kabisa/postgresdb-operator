@@ -30,3 +30,5 @@ spec:
             file_name:
               type: string
               minimum: 1
+            after_action_sql:
+              type: string
