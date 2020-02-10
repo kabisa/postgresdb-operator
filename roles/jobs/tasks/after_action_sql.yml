@@ -5,7 +5,7 @@
       apiVersion: v1
       kind: ConfigMap
       metadata:
-        name: "pg-{{ job_action }}-job-{{ meta.name }}-sql-scripts"
+        name: "{{ sql_script_name }}"
         namespace: "{{ meta.namespace }}"
       data:
         after-action.sql: "{{ after_action_sql }}"
@@ -40,7 +40,7 @@
     sql_volumes:
       - name: sqlscripts
         configMap:
-          name: "pg-{{ job_action }}-job-{{ meta.name }}-sql-scripts"
+          name: "{{ sql_script_name }}"
 - name: define volumes
   set_fact:
-    volumes: "{{ volumes + sql_volumes }}
+    volumes: "{{ volumes + sql_volumes }}"

@@ -36,6 +36,15 @@
               -n public \
               $LATEST_DUMP
           echo "pg_restore done"
+        after_action_sql.sh: |
+          #!/bin/bash -e
+          psql \
+              --host=$PGHOST \
+              --user=$PGUSER \
+              --port=$PGPORT \
+              --dbname=$DATABASE \
+              -f /sqlscripts/after-action.sql
+          echo "after_action_sql done"
         backup_az_blobs.sh: |
           #!/bin/bash -e
           # Only supports uploading with service principal for now.

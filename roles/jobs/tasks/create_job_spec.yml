@@ -1,5 +1,7 @@
-- name: define volumes
+- name: generate names and define volumes
   set_fact:
+    job_name: "pg-{{ job_action }}-{{ job_type }}-{{ meta.name }}"
+    sql_script_name: "pg-{{ job_action }}-{{ job_type }}-{{ meta.name }}-sql-scripts"
     volumes:
       - name: scripts
         configMap:
