@@ -14,6 +14,21 @@
   vars:
     host: "{{ host }}"
     namespace: "{{ meta.namespace }}"
+# maybe in the future also prevent connections to the database?
+- name: drop all connections
+  postgresql_query:
+    db: "{{ database_name }}"
+    login_user: "{{ admin_user_name }}"
+    login_host: "{{ address }}"
+    login_password: "{{ admin_password }}"
+    port: "{{ port }}"
+    query: |
+      SELECT pg_terminate_backend(pg_stat_activity.pid)
+      FROM pg_stat_activity
+      WHERE
+        pg_stat_activity.datname = '{{ database_name }}'
+        AND pid <> pg_backend_pid();
+  when: desired_state == "absent"
 - name: "Create a new database with name {{ database_name }}"
   postgresql_db:
     name: "{{ database_name }}"

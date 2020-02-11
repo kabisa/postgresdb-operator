@@ -16,6 +16,7 @@
   set_fact:
     from_database: "{{ res_dict.from_database }}"
     to_database: "{{ res_dict.to_database }}"
+    after_action_database: "{{ res_dict.to_database }}"
 - name: get pg_restore container info
   include_role:
     name: jobs

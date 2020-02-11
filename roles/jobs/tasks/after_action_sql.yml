@@ -1,0 +1,48 @@
+- name: ensure sql scripts
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: "{{ sql_script_name }}"
+        namespace: "{{ meta.namespace }}"
+      data:
+        after-action.sql: "{{ after_action_sql }}"
+- name: create pg dump container definition
+  set_fact:
+    after_action_sql_container:
+      name: pg-sql
+      image: "postgres:{{ after_action_database.pg_version | default('latest') }}"
+      env:
+        - name: PGHOST
+          value: "{{ after_action_database.pg_address }}"
+        - name: PGUSER
+          value: "{{ after_action_database.pg_user_name }}"
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ after_action_database.pg_user_secret_name }}"
+              key: "{{ after_action_database.pg_user_secret_key }}"
+        - name: PGPORT
+          value: "{{ after_action_database.pg_port }}"
+        - name: DATABASE
+          value: "{{ after_action_database.pg_database_name }}"
+      command:
+        - "/scripts/after_action_sql.sh"
+      volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: sqlscripts
+          mountPath: /sqlscripts
+        - name: pgdump
+          mountPath: /pgdump
+- name: define aa volume
+  set_fact:
+    sql_volumes:
+      - name: sqlscripts
+        configMap:
+          name: "{{ sql_script_name }}"
+- name: define volumes
+  set_fact:
+    volumes: "{{ volumes + sql_volumes }}"

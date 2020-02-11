@@ -2,11 +2,22 @@
 #    var: job_spec
 - name: generate name
   set_fact:
-    job_name: "pg-{{ job_action }}-{{ meta.name }}"
+    job_name: "pg-{{ job_action }}-{{ job_type }}-{{ meta.name }}"
+    sql_script_name: "pg-{{ job_action }}-{{ job_type }}-{{ meta.name }}-sql-scripts"
+- name: dbg
+  debug:
+    var: job_name
 - name: remove job
   k8s:
     api_version: batch/v1
     state: absent
     kind: Job
     name: "{{ job_name }}"
+    namespace: "{{ meta.namespace }}"
+- name: remove sql configmap
+  k8s:
+    api_version: v1
+    state: absent
+    kind: ConfigMap
+    name: "{{ sql_script_name }}"
     namespace: "{{ meta.namespace }}"

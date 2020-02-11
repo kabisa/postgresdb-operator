@@ -31,5 +31,5 @@ docker push kabisa/postgresdb-operator
 # rendering the single operator installation yaml
 
 ```bash
-kubectl create -k deploy --dry-run -o yaml > operator_from_single_file.yaml
+kubectl create -k deploy --dry-run -o yaml > deploy/operator_from_single_file.yaml
 ```
