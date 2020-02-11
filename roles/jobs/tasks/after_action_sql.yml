@@ -13,24 +13,26 @@
   set_fact:
     after_action_sql_container:
       name: pg-sql
-      image: "postgres:{{ from_database.pg_version | default('latest') }}"
+      image: "postgres:{{ after_action_database.pg_version | default('latest') }}"
       env:
         - name: PGHOST
-          value: "{{ from_database.pg_address }}"
+          value: "{{ after_action_database.pg_address }}"
         - name: PGUSER
-          value: "{{ from_database.pg_user_name }}"
+          value: "{{ after_action_database.pg_user_name }}"
         - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
-              name: "{{ from_database.pg_user_secret_name }}"
-              key: "{{ from_database.pg_user_secret_key }}"
+              name: "{{ after_action_database.pg_user_secret_name }}"
+              key: "{{ after_action_database.pg_user_secret_key }}"
         - name: PGPORT
-          value: "{{ from_database.pg_port }}"
+          value: "{{ after_action_database.pg_port }}"
         - name: DATABASE
-          value: "{{ from_database.pg_database_name }}"
+          value: "{{ after_action_database.pg_database_name }}"
       command:
         - "/scripts/after_action_sql.sh"
       volumeMounts:
+        - name: scripts
+          mountPath: /scripts
         - name: sqlscripts
           mountPath: /sqlscripts
         - name: pgdump

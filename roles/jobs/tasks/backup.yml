@@ -14,6 +14,7 @@
   set_fact:
     to_az_blobs: "{{ res_dict.to_az_blobs }}"
     from_database: "{{ res_dict.from_database }}"
+    after_action_database: "{{ res_dict.from_database }}"
 - name: get pg_dump container info
   include_role:
     name: jobs

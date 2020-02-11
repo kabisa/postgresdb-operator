@@ -1,4 +1,4 @@
-local-playbook.yml
 vars.yml
 .idea
 *.retry
+local_playbook*.yml

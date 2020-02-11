@@ -1,11 +1,13 @@
-- name: generate names and define volumes
+- name: generate names
   set_fact:
     job_name: "pg-{{ job_action }}-{{ job_type }}-{{ meta.name }}"
     sql_script_name: "pg-{{ job_action }}-{{ job_type }}-{{ meta.name }}-sql-scripts"
+- name: define volumes
+  set_fact:
     volumes:
       - name: scripts
         configMap:
-          name: pg-backup-scripts
+          name: pg-operator-scripts
           defaultMode: 0777
       - emptyDir: {}
         name: pgdump
