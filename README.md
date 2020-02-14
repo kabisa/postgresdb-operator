@@ -22,7 +22,6 @@ What is required:
  
 ## Important notes
 
- - Deleting a `Database` resource will also delete the postgres database. This is irreversible (if you don't have backups)
  - The operator handles out-of-order creation of resources fairly well. But editing kubernetes `Secrets` wont retrigger the operator to run.
 That's why it is advisable to first create `Secrets` and create the depending resources afterwards.
  - In resource definitions like that of `Database` or `DatabaseUser` the are two name fields. That of the resource definition / Kubernetes object (metadata->name) and that of the managed object itself. Eg. `database_name` and `user_name`. The resource names are used to refer to the Kubernetes object. For example if you give a grant to a `DatabaseUser` you give the name of the Kubernetes object, not the name of postgres user in the database. 
@@ -108,6 +107,7 @@ metadata:
 spec:
   host: example-host
   database_name: example-database
+  drop_on_deletion: true
 ```
 
 This will log in to the postgres server and create a database with the name `example-database`

@@ -18,7 +18,7 @@ spec:
       required: ["spec"]
       properties:
         spec:
-          required: ["host" , "database_name"]
+          required: ["host" , "database_name", "drop_on_deletion"]
           properties:
             host:
               type: string
@@ -26,3 +26,5 @@ spec:
             database_name:
               type: string
               minimum: 1
+            drop_on_deletion:
+              type: boolean

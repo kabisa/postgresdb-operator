@@ -37,3 +37,4 @@
     login_host: "{{ address }}"
     login_password: "{{ admin_password }}"
     port: "{{ port }}"
+  when: desired_state == "present" or drop_on_deletion == True
