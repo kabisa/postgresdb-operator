@@ -28,7 +28,7 @@
       WHERE
         pg_stat_activity.datname = '{{ database_name }}'
         AND pid <> pg_backend_pid();
-  when: desired_state == "absent"
+  when: desired_state == "absent" and drop_on_deletion == True
 - name: "Create a new database with name {{ database_name }}"
   postgresql_db:
     name: "{{ database_name }}"
