@@ -230,12 +230,15 @@ spec:
             database_name:
               minimum: 1
               type: string
+            drop_on_deletion:
+              type: boolean
             host:
               minimum: 1
               type: string
           required:
           - host
           - database_name
+          - drop_on_deletion
       required:
       - spec
   version: v1alpha1
