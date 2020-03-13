@@ -30,3 +30,5 @@ spec:
               type: string
             after_action_sql:
               type: string
+            file_name:
+              type: string

@@ -19,7 +19,7 @@
           value: "{{ from_database.pg_database_name }}"
       command:
         - "/scripts/backup_postgres.sh"
-        - "{{ from_database.pg_database_name }}"
+        - "{{ file_name | default('') }}"
       volumeMounts:
         - name: scripts
           mountPath: /scripts
